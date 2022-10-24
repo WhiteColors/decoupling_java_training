@@ -7,14 +7,31 @@ import java.security.SecureRandom;
 
 public class Launcher {
     public static void main(String[] args) {
-        SecureRandom random = new SecureRandom();
-        long randomNumber = random.nextInt(100);
-        Player player = new HumanPlayer();
-        Logger logger = LoggerFactory.getLogger(player.getClass().getSimpleName());
-        //logger.log("The number to find is " + randomNumber);
-        logger.log("Guess a number between 0 and 100");
-        Simulation simulation = new Simulation(player);
-        simulation.initialize(randomNumber);
-        simulation.loopUntilPlayerSucceed();
+        switch (args[0]) {
+            case "-interactive":
+                Player player = new HumanPlayer();
+                Simulation simulationPlayer = new Simulation(player);
+                SecureRandom random = new SecureRandom();
+                long randomNumber = random.nextInt(100);
+                simulationPlayer.initialize(randomNumber);
+                simulationPlayer.loopUntilPlayerSucceed(Long.MAX_VALUE);
+                break;
+            case "-auto":
+                if (args.length == 2) {
+                    try {
+                        long number = Long.parseLong(args[1]);
+                        Player computerPlayer = new ComputerPlayer();
+                        Simulation simulationComputer = new Simulation(computerPlayer);
+                        simulationComputer.initialize(number);
+                        simulationComputer.loopUntilPlayerSucceed(1000);
+                    } catch (NumberFormatException e) {
+                        System.out.println("The second argument must be an long number");
+                    }
+                }
+                break;
+            default:
+                System.out.println("Usage: java -jar [ jarFile ] [ -interactive | -auto <number> ]");
+                break;
+        }
     }
 }

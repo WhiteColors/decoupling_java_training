@@ -26,9 +26,20 @@ public class Simulation {
             return false;
         }
     }
-    public void loopUntilPlayerSucceed() {
+    public void loopUntilPlayerSucceed(long maxIteration) {
+        long startTime = System.currentTimeMillis();
         while(!nextRound()) {
+            maxIteration--;
             nextRound();
         }
+        if(maxIteration < 0) {
+            logger.log("You have not found the number in the number of attempts allowed.");
+        }else{
+            logger.log("You have found the number in the number of attempts allowed.");
+        }
+        logger.log("Time elapsed: " + String.format("%02d:%02d.%02d",
+            (System.currentTimeMillis() - startTime) / 60000,
+            (System.currentTimeMillis() - startTime) / 1000 % 60,
+            (System.currentTimeMillis() - startTime) % 1000));
     }
 }
