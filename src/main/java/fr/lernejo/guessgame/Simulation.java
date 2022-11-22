@@ -1,45 +1,53 @@
 package fr.lernejo.guessgame;
-
 import fr.lernejo.logger.Logger;
 import fr.lernejo.logger.LoggerFactory;
 
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Scanner;
+
 public class Simulation {
-
     private final Logger logger = LoggerFactory.getLogger("simulation");
-    private final Player player;
-    private long numberToGuess;
-
+    private final Player player;  //TODO add variable type
+    private long numberToGuess; //TODO add variable type
     public Simulation(Player player) {
         this.player = player;
     }
-
     public void initialize(long numberToGuess) {
         this.numberToGuess = numberToGuess;
     }
+
     private boolean nextRound() {
-        long guess = player.askNextGuess();
-        if (guess == numberToGuess) {
-            logger.log("You win!");
-            return true;
-        } else {
-            player.respond(guess > numberToGuess);
+        long number = player.askNextGuess();
+        logger.log("User typed " + number);
+        if (number < numberToGuess) {
+            player.respond(true);
             return false;
         }
+        else if (number > numberToGuess) {
+            player.respond(false);
+            return false;
+        }
+        return true;
     }
-    public void loopUntilPlayerSucceed(long maxIteration) {
+
+    public void loopUntilPlayerSucceed(long limit) {
+        boolean isFinished = false;
+        long n = 0;
         long startTime = System.currentTimeMillis();
-        while(!nextRound()) {
-            maxIteration--;
-            nextRound();
+        while (!isFinished && n < limit){
+            isFinished = nextRound();
+            n++;
         }
-        if(maxIteration < 0) {
-            logger.log("You have not found the number in the number of attempts allowed.");
-        }else{
-            logger.log("You have found the number in the number of attempts allowed.");
-        }
-        logger.log("Time elapsed: " + String.format("%02d:%02d.%02d",
-            (System.currentTimeMillis() - startTime) / 60000,
-            (System.currentTimeMillis() - startTime) / 1000 % 60,
-            (System.currentTimeMillis() - startTime) % 1000));
+        long durringTime = System.currentTimeMillis() - startTime;
+        Date time = new Date(durringTime);
+        DateFormat df = new SimpleDateFormat("mm:ss.SSS");
+        logger.log("During time: " + df.format(time));
+        if (isFinished)
+            logger.log("Player has found the number in " + n + " iterations");
+        else
+            logger.log("Player has not found the number within " + limit + " iterations");
     }
 }
