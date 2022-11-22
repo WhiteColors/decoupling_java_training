@@ -3,15 +3,15 @@ package fr.lernejo.guessgame;
 import fr.lernejo.logger.Logger;
 import fr.lernejo.logger.LoggerFactory;
 
-import java.util.Scanner;
-
 public class ComputerPlayer implements Player {
     private long min = 0;
     private long max = 100;
     private long guess = 50;
+    private final Logger logger = LoggerFactory.getLogger("ComputerPlayer");
 
     @Override
     public long askNextGuess() {
+        this.logger.log("Guessing " + this.guess);
         return guess;
     }
 
